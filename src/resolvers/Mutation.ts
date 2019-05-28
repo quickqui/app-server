@@ -1,5 +1,5 @@
 import { stringArg, idArg, mutationType } from 'nexus'
-import { hash, compare } from 'bcrypt'
+// import { hash, compare } from 'bcrypt'
 import { APP_SECRET, getUserId } from '../utils'
 import { sign } from 'jsonwebtoken'
 
@@ -13,11 +13,12 @@ export const Mutation = mutationType({
         password: stringArg(),
       },
       resolve: async (parent, { name, email, password }, ctx) => {
-        const hashedPassword = await hash(password, 10)
+        // TODO bcrypt有各种问题，先明文保存
+        // const hashedPassword = await hash(password, 10)
         const user = await ctx.prisma.createUser({
           name,
           email,
-          password: hashedPassword,
+          password: password,
         })
         return {
           token: sign({ userId: user.id }, APP_SECRET),
@@ -37,8 +38,8 @@ export const Mutation = mutationType({
         if (!user) {
           throw new Error(`No user found for email: ${email}`)
         }
-        const passwordValid = await compare(password, user.password)
-        if (!passwordValid) {
+        // const passwordValid = await compare(password, user.password)
+        if (!(password === user.password)) {
           throw new Error('Invalid password')
         }
         return {
