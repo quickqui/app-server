@@ -1,0 +1,26 @@
+GET http://localhost:1111/app
+
+###
+
+POST http://localhost:1111/app HTTP/1.1
+content-type: application/json
+
+{
+    "hello":"world"
+}
+
+###
+
+POST http://localhost:1111/dataProvider HTTP/1.1
+content-type: application/json
+
+{
+    "type":"GET_LIST",
+    "resource":"User",
+    "params":{
+        "pagination": { "page": 1, "perPage": 5 },
+        "sort": { "field": "id", "order": "ASC" },
+        "filter": {  }
+    }
+}
+
