@@ -1,54 +1,35 @@
-import { GraphQLServer } from 'graphql-yoga'
-import { prisma } from './generated/prisma-client'
-import * as path from 'path'
-import { makePrismaSchema } from 'nexus-prisma'
-import { permissions } from './permissions'
-import * as allTypes from './resolvers'
-import datamodelInfo from './generated/nexus-prisma'
 
-const schema = makePrismaSchema({
-  // Provide all the GraphQL types we've implemented
-  types: allTypes,
+import * as express from "express";
+import * as bodyParser from 'body-parser'
 
-  // Configure the interface to Prisma
-  prisma: {
-    datamodelInfo,
-    client: prisma,
-  },
 
-  // Specify where Nexus should put the generated files
-  outputs: {
-    schema: path.join(__dirname, './generated/schema.graphql'),
-    typegen: path.join(__dirname, './generated/nexus.ts'),
-  },
+import { env } from "./Env";
 
-  // Configure nullability of input arguments: All arguments are non-nullable by default
-  nonNullDefaults: {
-    input: false,
-    output: false,
-  },
 
-  // Configure automatic type resolution for the TS representations of the associated types
-  typegenAutoConfig: {
-    sources: [
-      {
-        source: path.join(__dirname, './types.ts'),
-        alias: 'types',
-      },
-    ],
-    contextType: 'types.Context',
-  },
-})
 
-const server = new GraphQLServer({
-  schema,
-  middlewares: [permissions],
-  context: request => {
-    return {
-      ...request,
-      prisma,
+const app = express();
+const port = 1111; // default port to listen
+
+
+
+
+app.use(bodyParser.text());
+
+app.get("/app", async function (req, res, next) {
+    try {
+        res.status(200).send("app server")
+    } catch (e) {
+        next(e);
     }
-  },
-})
+});
 
-server.start(() => console.log(`🚀 Server ready at http://localhost:4000`))
+
+
+app.listen(port, () => {
+    // tslint:disable-next-line:no-console
+    console.log(`server started at http://localhost:${port}`);
+});
+
+
+
+
