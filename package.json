@@ -6,6 +6,7 @@
     "start": "nodemon -x ts-node  src/index.ts"
   },
   "dependencies": {
+    "@quick-qui/data-provider": "1.0.0",
     "@types/ramda": "^0.26.19",
     "apollo-cache-inmemory": "^1.6.3",
     "apollo-link-http": "^1.5.15",

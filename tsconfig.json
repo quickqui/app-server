@@ -3,10 +3,9 @@
     "target":"esnext",
     "sourceMap": true,
     "outDir": "dist",
-    "strict": true,
     "lib": ["esnext", "dom"],
     "allowJs": true,
     "noImplicitAny":false,
-    "moduleResolution": "node",
+    "moduleResolution": "node"
   }
 }

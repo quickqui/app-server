@@ -4,7 +4,7 @@ import * as bodyParser from 'body-parser'
 
 
 import { env } from "./Env";
-import { provrider } from "./data";
+import { provider } from "./data";
 
 
 
@@ -40,9 +40,9 @@ app.post("/dataProvider", async function (req, res, next) {
         const type: string = data.type
         const resource: string = data.resource
         const params: { [key: string]: any; } = data.params
-        const p = await provrider
-        const result = p(type, resource, params)
-        res.status(200).json(result).send()
+        const p = await provider
+        const result: Promise<any> = p(type, resource, params)
+        res.status(200).json(await result).send()
     } catch (e) {
         next(e);
     }
