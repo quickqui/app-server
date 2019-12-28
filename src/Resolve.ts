@@ -1,17 +1,32 @@
-import { env } from "./Env";
+import * as path from "path";
 function _interopRequireDefault(obj: any) {
-  console.log(obj);
-  return obj && obj.__esModule ? obj : { default: obj };
+  return (obj?.__esModule || obj?.default)? obj : { default: obj };
 }
 
-export const resolve = <T extends unknown>(path: string): Promise<T> => {
-  // if (env.name === "dev_local") {
-  //   return import(
-  //     `../../../../huadahengxinProjects/fake-device-general/dist/${path}`
-  //   ).then(obj => _interopRequireDefault(obj).default as T);
-  // }
-  if (env.name === "dev_docker") {
-      return import(`../../../extendDir/dist/${path}`).then(obj => _interopRequireDefault(obj).default as T);
+export const resolve = <T extends unknown>(
+  pathStr: string,
+  baseDir: string = "."
+): Promise<T> => {
+  let re = tryResolve(path.resolve(baseDir, pathStr));
+  if (!re) {
+    re = tryResolve(path.resolve(baseDir, "..", pathStr));
   }
-  throw new Error("Only can resolve an known path");
+  if (!re) {
+    re = tryResolve(path.resolve(baseDir, "../dist", pathStr));
+  }
+  if (!re) {
+    throw new Error(`can not find module, path=${pathStr} ,baseDir=${baseDir}`);
+  }
+  return import(re!).then(obj => _interopRequireDefault(obj).default as T);
 };
+function tryResolve(name: string): string | undefined {
+  try {
+    return require.resolve(name);
+  } catch (err) {
+    if (err.code === "MODULE_NOT_FOUND") {
+      return undefined;
+    } else {
+      throw err;
+    }
+  }
+}

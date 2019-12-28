@@ -23,4 +23,16 @@ content-type: application/json
         "filter": {  }
     }
 }
+###
 
+POST http://localhost:4000/dataProvider HTTP/1.1
+content-type: application/json
+
+{
+    "type":"GET_LIST",
+    "resource":"Function",
+    "params":{
+        "pagination": { "page": 1, "perPage": 5 },
+        "sort": { "field": "id", "order": "ASC" }
+    }
+}

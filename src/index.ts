@@ -1,8 +1,9 @@
-import * as express from "express";
-import * as bodyParser from "body-parser";
-import * as cors from "cors";
+import express from "express";
+import bodyParser from "body-parser";
+import cors from "cors";
 
-import { provider } from "./data";
+import { dataProvider } from "./data/Data";
+import { StringKeyObject } from "@quick-qui/model-defines";
 
 const app = express();
 const port = 4000; // default port to listen
@@ -10,38 +11,22 @@ const port = 4000; // default port to listen
 app.use(cors());
 
 app.use(bodyParser.json());
-
-app.get("/app", async function(req, res, next) {
-  try {
-    res.status(200).send("hello world");
-  } catch (e) {
-    next(e);
-  }
-});
-
-app.post("/app", async function(req, res, next) {
-  try {
-    res
-      .status(200)
-      .json(req.body)
-      .send();
-  } catch (e) {
-    next(e);
-  }
-});
-
+/*
+NOTE 算是一个“内部”接口，不会被业务使用，前端的exchange用这个实现dataProvider的向后传递。
+ */
+/*
+ TODO 后端接口，rest之类的，需要根据model动态产生。 
+ */
 app.post("/dataProvider", async function(req, res, next) {
   try {
     const data = await req.body;
     const type: string = data.type;
     const resource: string = data.resource;
-    const params: { [key: string]: any } = data.params;
-    const p = await provider;
-    const result: Promise<any> = p(type, resource, params);
-    const r = await result;
+    const params: StringKeyObject = data.params;
+    const result: Promise<any> = (await dataProvider)(type, resource, params);
     res
       .status(200)
-      .json(r)
+      .json(await result)
       .send();
   } catch (e) {
     next(e);
