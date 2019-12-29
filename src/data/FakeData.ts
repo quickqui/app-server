@@ -7,11 +7,12 @@ import {
 import { model } from "../Model";
 import { withExchangeModel, REF_RESOLVE } from "@quick-qui/model-defines";
 import _ from "lodash";
-import { resolve } from "../Resolve";
+import { resolve, resolveAsString } from "../Resolve";
 import { parseRef } from "@quick-qui/model-defines";
 import assert from "assert";
+import * as yaml from "js-yaml";
 
-//TODO fakedata provider 是一个implementation， 应该以什么方式跟front、app-server 连接？
+//TODO fake data provider 是一个implementation， 应该以什么方式跟front、app-server 连接？
 
 export const fakeDataDataProvider: Promise<
   DataProvider | undefined
@@ -35,7 +36,12 @@ export const fakeDataDataProvider: Promise<
         );
         const base =
           exchange.annotations?.["buildingContext"]?.modelFile?.repositoryBase;
-        fakeData = await resolve(path, base);
+        const dataString = await resolveAsString(path, base);
+        if (path.endsWith(".json")) {
+          fakeData = JSON.parse(dataString);
+        } else if (path.endsWith(".yml") || path.endsWith(".yaml")) {
+          fakeData = yaml.safeLoad(dataString);
+        }
       }
     }
     if (!fakeData) throw new Error("no fake data find");
