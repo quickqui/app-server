@@ -15,7 +15,7 @@ app.use(bodyParser.json());
 NOTE 算是一个“内部”接口，不会被业务使用，前端的exchange用这个实现dataProvider的向后传递。
  */
 /*
- TODO 后端接口，rest之类的，需要根据model动态产生。 
+ NOTE 后端接口，rest之类的，属于一个单独的implementation，需要根据model动态产生。 
  */
 app.post("/dataProvider", async function(req, res, next) {
   try {

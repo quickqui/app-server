@@ -15,7 +15,7 @@ export const resolve = <T extends unknown>(
   baseDir: string = "."
 ): Promise<T> => {
   let re = findInPath(baseDir, pathStr);
-  return import(re!).then(obj => _interopRequireDefault(obj).default as T);
+  return import(re).then(obj => _interopRequireDefault(obj).default as T);
 };
 function findInPath(baseDir: string, pathStr: string): string {
   let re = tryResolve(path.resolve(baseDir, pathStr));

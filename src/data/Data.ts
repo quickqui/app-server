@@ -8,8 +8,14 @@ import {
   chain,
   forResource
 } from "@quick-qui/data-provider";
-import { withExchangeModel, Exchange } from "@quick-qui/model-defines";
+import {
+  withExchangeModel,
+  Exchange,
+  parseRef,
+  REF_RESOLVE
+} from "@quick-qui/model-defines";
 import { fakeDataDataProvider } from "./FakeData";
+import assert from "assert";
 import {
   emptyDataProvider,
   w
@@ -20,7 +26,7 @@ const backEndDataProvider: DataProvider = (
   params: DataProviderParams
 ) => {
   //TODO 连上后面的dp，比如database的。
-  throw new Error("not implemented");
+  throw new Error(`no data provider find - ${{ type, resource, ...params }}`);
 };
 const thisEndDataProvider: Promise<DataProvider | undefined> = (async () => {
   const exchangeModel = withExchangeModel(await model)?.exchangeModel;
@@ -33,7 +39,14 @@ const thisEndDataProvider: Promise<DataProvider | undefined> = (async () => {
     //TODO 支持extension以外的方式
     const base =
       exchange.annotations?.["buildingContext"]?.modelFile?.repositoryBase;
-    const dataProvider = await resolve<DataProvider>(exchange.extension!, base);
+    const ref = exchange.extension!;
+    const { protocol, path } = parseRef(ref);
+    assert.equal(
+      protocol,
+      REF_RESOLVE,
+      `only support resolve, but got "${protocol}"`
+    );
+    const dataProvider = await resolve<DataProvider>(path, base);
     return forResource(exchange.resources, dataProvider);
   });
 
