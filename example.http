@@ -43,7 +43,7 @@ content-type: application/json
 
 {
     "type":"GET_LIST",
-    "resource":"Issue",
+    "resource":"Model",
     "params":{
         "pagination": { "page": 1, "perPage": 5 },
         "sort": { "field": "id", "order": "ASC" }

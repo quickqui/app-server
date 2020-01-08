@@ -1,10 +1,16 @@
 import express from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
-
+import debug from "debug";
 import { dataProvider } from "./data/Data";
-import { StringKeyObject } from "@quick-qui/model-defines";
-
+import {env} from "./Env";
+import {
+  StringKeyObject,
+  withImplementationModel
+} from "@quick-qui/model-defines";
+import { model } from "./Model";
+import { implementationGlobal } from "@quick-qui/model-defines";
+import { DataProviderParams } from "@quick-qui/data-provider";
 const app = express();
 const port = 4000; // default port to listen
 
@@ -22,7 +28,7 @@ app.post("/dataProvider", async function(req, res, next) {
     const data = await req.body;
     const type: string = data.type;
     const resource: string = data.resource;
-    const params: StringKeyObject = data.params;
+    const params: DataProviderParams<unknown> = data.params as DataProviderParams<unknown>;
     const result: Promise<any> = (await dataProvider)(type, resource, params);
     res
       .status(200)
@@ -33,7 +39,22 @@ app.post("/dataProvider", async function(req, res, next) {
   }
 });
 
-app.listen(port, () => {
-  // tslint:disable-next-line:no-console
-  console.log(`server started at http://localhost:${port}`);
+model.then(async m => {
+  const impl = withImplementationModel(
+    m
+  )?.implementationModel?.implementations.find(
+    implementation => implementation.name === "back"
+  );
+  if (impl) {
+    if (impl.injections?.includes("env")) {
+      implementationGlobal["env"] = env;
+    }
+    if (impl.injections?.includes("dataProvider")) {
+      implementationGlobal["dataProvider"] = await dataProvider;
+    }
+  }
+  app.listen(port, () => {
+    // tslint:disable-next-line:no-console
+    console.log(`server started at http://localhost:${port}`);
+  });
 });

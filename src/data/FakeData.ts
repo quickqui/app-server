@@ -1,16 +1,19 @@
 import {
-  DataProvider,
   chain,
+  DataProvider,
   forResource,
   withStaticData
 } from "@quick-qui/data-provider";
-import { model } from "../Model";
-import { withExchangeModel, REF_RESOLVE } from "@quick-qui/model-defines";
-import _ from "lodash";
-import { resolve, resolveAsString } from "../Resolve";
-import { parseRef } from "@quick-qui/model-defines";
+import {
+  parseRef,
+  REF_RESOLVE,
+  withExchangeModel
+} from "@quick-qui/model-defines";
 import assert from "assert";
 import * as yaml from "js-yaml";
+import _ from "lodash";
+import { model } from "../Model";
+import { resolve, resolveAsString } from "../Resolve";
 
 //TODO fake data provider 是一个implementation， 应该以什么方式跟front、app-server 连接？
 
@@ -25,6 +28,7 @@ export const fakeDataDataProvider: Promise<
   if (_.isEmpty(exchanges)) return undefined;
   const providers = exchanges.map(async exchange => {
     //TODO 支持faker，或者唯一支持faker
+    //TODO  目前的实现方法，每次改了fake以后app-server需要重启，不太理想，设计到两个环节，一个是model要重取，一个是fake 的dp要支持动态。
     let fakeData = exchange.parameters?.["fakeData"];
     if (fakeData) {
       if (typeof fakeData === "string") {
@@ -41,6 +45,8 @@ export const fakeDataDataProvider: Promise<
           fakeData = JSON.parse(dataString);
         } else if (path.endsWith(".yml") || path.endsWith(".yaml")) {
           fakeData = yaml.safeLoad(dataString);
+        } else {
+          fakeData = await resolve(path, base);
         }
       }
     }
