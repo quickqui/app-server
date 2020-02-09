@@ -7,6 +7,6 @@
 
 ## 如何工作
 
-1. 以node启动。
-1. 从model-server取得模型和必要的模型扩展代码。
+1. 以nodejs应用运行。
+1. 从[model-server](../model-server)取得模型和必要的模型扩展代码。
 1. 根据模型，动态提供能力。
