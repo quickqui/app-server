@@ -35,9 +35,11 @@ const thisEndDataProvider: Promise<DataProvider | undefined> = (async () => {
     }) ?? [];
   if (_.isEmpty(exchanges)) return undefined;
   const providers = exchanges.map(async (exchange: Exchange) => {
-    if (exchange.extension) {
+    if (exchange.annotations?.["implementation"]) {
       //TODO 支持extension以外的方式
-      const { protocol, path } = parseRef(exchange.extension);
+      const { protocol, path } = parseRef(
+        exchange.annotations?.["implementation"]!
+      );
       assert.equal(
         protocol,
         REF_RESOLVE,
