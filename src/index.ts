@@ -3,7 +3,7 @@ import bodyParser from "body-parser";
 import cors from "cors";
 import debug from "debug";
 import { dataProvider } from "./data/Data";
-import {env} from "./Env";
+import { env } from "./Env";
 import {
   StringKeyObject,
   withImplementationModel
@@ -28,7 +28,9 @@ app.post("/dataProvider", async function(req, res, next) {
     const data = await req.body;
     const type: string = data.type;
     const resource: string = data.resource;
-    const params: DataProviderParams<unknown> = data.params as DataProviderParams<unknown>;
+    const params: DataProviderParams<unknown> = data.params as DataProviderParams<
+      unknown
+    >;
     const result: Promise<any> = (await dataProvider)(type, resource, params);
     res
       .status(200)
