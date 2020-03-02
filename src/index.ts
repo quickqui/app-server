@@ -12,7 +12,7 @@ import { model } from "./Model";
 import { implementationGlobal } from "@quick-qui/model-defines";
 import { DataProviderParams } from "@quick-qui/data-provider";
 const app = express();
-const port = 4000; // default port to listen
+const port = process.env.PORT || 4000; // default port to listen
 
 app.use(cors());
 
