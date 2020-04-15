@@ -1,12 +1,11 @@
-
 import parse from "url-parse";
 import waitPort from "wait-port";
 
 export function filterObject(obj: any) {
   const ret: any = {};
   Object.keys(obj)
-    .filter(key => obj[key] !== undefined)
-    .forEach(key => (ret[key] = obj[key]));
+    .filter((key) => obj[key] !== undefined)
+    .forEach((key) => (ret[key] = obj[key]));
   return ret;
 }
 
@@ -14,12 +13,15 @@ export function no(name: string) {
   throw new Error(`env not found - ${name}`);
 }
 
-
-export function waitForUrlPort(urlString: string):Promise<any>{
+export function waitForUrlPort(urlString: string): Promise<any> {
   const url = parse(urlString);
   const params = {
-    host: url.host,
-    port: +url.port
+    host: url.hostname,
+    port: +url.port,
   };
   return waitPort(params);
 }
+
+
+
+export const log = require('debug-logger')('quick-qui:app-server')
