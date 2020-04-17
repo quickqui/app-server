@@ -14,7 +14,7 @@ export const env: {
     defaults,
     filterObject({
       modelUrl: process.env.MODEL_URL,
-      extendPath: process.env.EXTEND_PATH ?? no("EXTEND_PATH")
+      extendPath: (process.env.EXTEND_PATH || process.env.MODEL_PATH)?? no("EXTEND_PATH")
     })
   );
 })();
