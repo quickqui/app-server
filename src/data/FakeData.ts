@@ -39,7 +39,6 @@ export const fakeDataDataProvider: Promise<
           REF_RESOLVE,
           `only support resolve, but got "${protocol}"`
         );
-        //FIXME 有极大的问题，building context是model-server set的，是model-server容器内的path，不一定是app-server容器内的path。
 
         const modelFile = exchange.annotations?.["buildingContext"]?.modelFile;
 
