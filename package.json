@@ -6,7 +6,8 @@
     "imageRepo": "nielinjie/quickqui-app-server"
   },
   "scripts": {
-    "start": "ts-node  src/index.ts",
+    "start-ts": "ts-node  src/index.ts",
+    "start": "node  dist/index.js",
     "dev:start": "nodemon -x ts-node  src/index.ts",
     "docker:build": "cross-conf-env docker image build . -t $npm_package_config_imageRepo:$npm_package_version",
     "postdocker:build": "npm run docker:tag",
