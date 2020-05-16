@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { filterObject, no } from "./Util";
+import { filterObject, no, log } from "./Util";
 
 export const env: {
   modelUrl: string;
@@ -9,7 +9,7 @@ export const env: {
   defaults = {
     modelUrl: "http://localhost:1111"
   };
-  console.log(JSON.stringify(process.env,undefined,2))
+  log.debug(JSON.stringify(process.env,undefined,2))
   return _.assign(
     {},
     defaults,
