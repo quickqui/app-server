@@ -1,8 +1,10 @@
 {
   "name": "@quick-qui/app-server",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "main": "src/index.ts",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "config": {
     "imageRepo": "nielinjie/quickqui-app-server"
   },
