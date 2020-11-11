@@ -46,8 +46,11 @@ model.then(async (m) => {
   const impl = withImplementationModel(
     m
   )?.implementationModel?.implementations.find(
-    (implementation) => implementation.name === "back"
+    (implementation) => implementation.name === env.implementationName
   );
+  console.log(env.implementationName)
+  console.log(impl)
+
   if (impl) {
     if (impl.injections?.includes("env")) {
       implementationGlobal["env"] = env;
