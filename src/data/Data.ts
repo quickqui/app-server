@@ -4,22 +4,18 @@ import {
   DataProviderParams,
   dp,
   forResource,
-  restDp,
-  withResourceMap,
 } from "@quick-qui/data-provider";
 import {
-  Exchange,
-  parseRef,
-  REF_RESOLVE,
-  withExchangeModel,
+  withInfoModel,
+  Info,
+  parseRefWithProtocolInsure,
 } from "@quick-qui/model-defines";
-import assert from "assert";
+import { fail } from "assert";
 import _ from "lodash";
 import { model } from "../Model";
 import { resolve } from "../Resolve";
-import { fakeDataDataProvider } from "./FakeData";
-import { env } from "../Env";
-import p from "path";
+import { getFakeDataProvider } from "./FakeData";
+import { notNil } from "../Util";
 
 const backEndDataProvider: DataProvider = (
   type: string,
@@ -32,37 +28,48 @@ const backEndDataProvider: DataProvider = (
   );
 };
 const thisEndDataProvider: Promise<DataProvider | undefined> = (async () => {
-  const exchangeModel = withExchangeModel(await model)?.exchangeModel;
-  const exchanges =
-    exchangeModel?.exchanges?.filter((exchange) => {
-      return exchange.to === "back" && exchange.from !== "fake";
+  const infoModel = withInfoModel(await model)?.infoModel;
+  const infos =
+    infoModel?.infos?.filter((info) => {
+      return (
+        //TODO event 如何实现？
+        info.type === "resource" &&
+        info.annotations?.implementation?.at === "back"
+      );
     }) ?? [];
-  if (_.isEmpty(exchanges)) return undefined;
-  const providers = exchanges.map(async (exchange: Exchange) => {
-    if (exchange.annotations?.["implementation"]) {
-      //TODO 支持extension以外的方式， 比如rest，graphql
-      const { protocol, path } = parseRef(
-        exchange.annotations?.["implementation"]!
-      );
-      assert.equal(
-        protocol,
-        REF_RESOLVE,
-        `only support resolve, but got "${protocol}"`
-      );
-      const modelFile = exchange.annotations?.["buildingContext"]?.modelFile;
-      const base = modelFile
-        ? p.resolve(env.extendPath, modelFile.relativeToModelDir)
-        : env.extendPath;
-      const dataProvider = await resolve<DataProvider>(path, base);
-      return forResource(exchange.resources, dataProvider);
-    }
-  });
-  return Promise.all(providers).then((dataPS) => dataPS.reduce(chain));
-})();
+  if (_.isEmpty(infos)) return undefined;
+  const providers: Promise<DataProvider | undefined>[] = infos.map(
+    getDataProvider
+  );
 
-export const dataProvider: Promise<DataProvider> = fakeDataDataProvider.then(
-  (fakeDp) =>
-    thisEndDataProvider.then((thisEndDp) => {
-      return dp(fakeDp).chain(dp(thisEndDp)).chain(backEndDataProvider).value();
-    })
+  return Promise.all(providers).then((dataPS) =>
+    dataPS.filter(notNil).reduce(chain)
+  );
+})();
+export const dataProvider: Promise<DataProvider> = thisEndDataProvider.then(
+  (thisEndDp) => {
+    return dp(thisEndDp).chain(backEndDataProvider).value();
+  }
 );
+async function getDataProvider(info: Info): Promise<DataProvider | undefined> {
+  let dataProvider: DataProvider | undefined = undefined;
+  // console.log(info.annotations?.buildingContext)
+  const base = info.annotations?.buildingContext?.modelFile?.repositoryBase;
+  if (info.annotations?.implementation?.source?.startsWith("resolve"))
+    dataProvider = await resolve<DataProvider>(
+      parseRefWithProtocolInsure(info.annotations?.implementation?.source).path,base
+    );
+  else if (info.annotations?.implementation?.source === "fake") {
+    dataProvider = await getFakeDataProvider(info);
+  } else if (info.annotations?.implementation?.source === "storage") {
+    if (info.scope === "config") {
+      // dataProvider = localStorageDp.value();
+      fail("not supported");
+    } else if (info.scope === "session") {
+      // dataProvider = sessionStorageDp.value();
+      fail("not supported");
+    }
+  }
+  if (!dataProvider) return undefined;
+  return forResource(info.resources!, dataProvider!);
+}

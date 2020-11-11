@@ -25,3 +25,10 @@ export function waitForUrlPort(urlString: string): Promise<any> {
 
 
 export const log = require('debug-logger')('quick-qui:app-server')
+
+
+export function notNil<TValue>(
+  value: TValue | null | undefined
+): value is TValue {
+  return value !== null && value !== undefined;
+}
