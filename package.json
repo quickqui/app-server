@@ -20,9 +20,9 @@
     "postdocker:publish": "cross-conf-env docker image push $npm_package_config_imageRepo:latest"
   },
   "dependencies": {
-    "@quick-qui/data-provider": "^1.4.0",
-    "@quick-qui/model-defines": "^2.7.0",
-    "@types/cors": "^2.8.8",
+    "@quick-qui/data-provider": "^1.4.1",
+    "@quick-qui/model-defines": "^2.7.1",
+    "@types/cors": "^2.8.9",
     "@types/js-yaml": "^3.12.5",
     "@types/lodash": "^4.14.165",
     "@types/ramda": "^0.26.44",
@@ -32,7 +32,7 @@
     "cors": "^2.8.5",
     "debug-logger": "^0.4.1",
     "express": "^4.17.1",
-    "js-yaml": "^3.14.0",
+    "js-yaml": "^3.14.1",
     "lodash": "^4.17.20",
     "node-fetch": "^2.6.1",
     "ramda": "^0.26.1",
@@ -41,7 +41,7 @@
   },
   "devDependencies": {
     "@types/express": "^4.17.9",
-    "@types/node": "^12.19.4",
+    "@types/node": "^12.19.8",
     "cross-conf-env": "^1.2.1",
     "nodemon": "^2.0.6",
     "npm-run-all": "^4.1.5",
