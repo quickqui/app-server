@@ -48,8 +48,8 @@ model.then(async (m) => {
   )?.implementationModel?.implementations.find(
     (implementation) => implementation.name === env.implementationName
   );
-  console.log(env.implementationName)
-  console.log(impl)
+  log.info(env.implementationName)
+  log.info(impl)
 
   if (impl) {
     if (impl.injections?.includes("env")) {
