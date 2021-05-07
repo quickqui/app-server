@@ -1,5 +1,6 @@
 import * as path from "path";
 import fs from "fs";
+import { log } from "./Util";
 function _interopRequireDefault(obj: any) {
   return obj?.__esModule || obj?.default ? obj : { default: obj };
 }
@@ -18,15 +19,16 @@ export const resolve = <T extends unknown>(
   return import(re).then(obj => _interopRequireDefault(obj).default as T);
 };
 function findInPath(baseDir: string, pathStr: string): string {
-  let re = tryResolve(path.resolve(baseDir, pathStr));
-  if (!re) {
-    re = tryResolve(path.resolve(baseDir, "..", pathStr));
+  const triedFolderList = [".", "..", "../dist"].map((p) =>
+    path.resolve(baseDir, p, pathStr)
+  );
+  let re;
+  for(let p of triedFolderList) {
+     re = tryResolve(p);
+     if(re) break;
   }
   if (!re) {
-    re = tryResolve(path.resolve(baseDir, "../dist", pathStr));
-  }
-  if (!re) {
-    throw new Error(`can not find module, path=${pathStr} ,baseDir=${baseDir}`);
+    throw new Error(`can not find module, path=${pathStr}, baseDir=${baseDir}, tried=${triedFolderList}`);
   }
   return re;
 }

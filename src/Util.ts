@@ -1,5 +1,6 @@
 import parse from "url-parse";
 import waitPort from "wait-port";
+import { logging } from "@quick-qui/util";
 
 export function filterObject(obj: any) {
   const ret: any = {};
@@ -24,7 +25,7 @@ export function waitForUrlPort(urlString: string): Promise<any> {
 
 
 
-export const log = require('debug-logger')('quick-qui:app-server')
+export const log = logging("quick-qui:app-server");
 
 
 export function notNil<TValue>(

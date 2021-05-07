@@ -1,17 +1,21 @@
+import dote from "dotenv";
+dote.config();
+
 import express from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
-import debug from "debug";
+import http from "http";
+
 import { dataProvider } from "./data/Data";
 import { env } from "./Env";
-import {
-  StringKeyObject,
-  withImplementationModel,
-} from "@quick-qui/model-defines";
+import { withImplementationModel } from "@quick-qui/model-defines";
 import { model } from "./Model";
 import { implementationGlobal } from "@quick-qui/model-defines";
 import { DataProviderParams } from "@quick-qui/data-provider";
 import { log } from "./Util";
+import { newWss } from "./socket";
+import { bus, events } from "./event";
+import debug from 'debug';
 const app = express();
 const port = process.env.PORT || 4000; // default port to listen
 
@@ -29,9 +33,7 @@ app.post("/dataProvider", async function (req, res, next) {
     const data = await req.body;
     const type: string = data.type;
     const resource: string = data.resource;
-    const params: DataProviderParams<unknown> = data.params as DataProviderParams<
-      unknown
-    >;
+    const params: DataProviderParams<unknown> = data.params as DataProviderParams<unknown>;
     const result: Promise<any> = (await dataProvider)(type, resource, params);
     res
       .status(200)
@@ -48,22 +50,32 @@ model.then(async (m) => {
   )?.implementationModel?.implementations.find(
     (implementation) => implementation.name === env.implementationName
   );
-  log.info(env.implementationName)
-  log.info(impl)
+  log.info('implementation name - ',env.implementationName);
+  log.debug(impl);
 
   if (impl) {
     if (impl.injections?.includes("env")) {
       implementationGlobal["env"] = env;
     } else {
-      log.info("env injection is disable");
+      log.warn("env injection is disable");
     }
     if (impl.injections?.includes("dataProvider")) {
       implementationGlobal["dataProvider"] = await dataProvider;
     } else {
-      log.info("dataProvider injection is disable");
+      log.warn("dataProvider injection is disable");
     }
+    if (impl.injections?.includes("eventBus")) {
+      implementationGlobal["eventBus"] = bus;
+    } else {
+      log.warn("eventBus injection is disable");
+    }
+    //setup event source.
+    events(m);
   }
-  app.listen(port, () => {
+  const server = http.createServer(app);
+  newWss(server);
+
+  server.listen(port, () => {
     // tslint:disable-next-line:no-console
     log.info(`server started at :${port}`);
   });

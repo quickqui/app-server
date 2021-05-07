@@ -1,22 +1,15 @@
-import {
-  withStaticData,
-} from "@quick-qui/data-provider";
-import {
-  parseRef,
-  REF_RESOLVE,
-  Info,
-} from "@quick-qui/model-defines";
+import { withStaticData } from "@quick-qui/data-provider";
+import { parseRef, REF_RESOLVE, Info } from "@quick-qui/model-defines";
 import assert, { fail } from "assert";
 import * as yaml from "js-yaml";
 import _ from "lodash";
 import { resolve, resolveAsString } from "../Resolve";
 import { env } from "../Env";
 import p from "path";
+import { log } from "../Util";
 //TODO fake data provider 是一个implementation， 应该以什么方式跟front、app-server 连接？
 
-
-
-export async function getFakeDataProvider(info:Info){
+export async function getFakeDataProvider(info: Info) {
   let fakeData = info.annotations?.implementation?.fakeData;
 
   if (fakeData) {
@@ -33,11 +26,12 @@ export async function getFakeDataProvider(info:Info){
       const base = modelFile
         ? p.resolve(env.extendPath, modelFile.relativeToModelDir)
         : env.extendPath;
-      const dataString = await resolveAsString(path, base);
       if (path.endsWith(".json")) {
+        const dataString = await resolveAsString(path, base);
         fakeData = JSON.parse(dataString);
       } else if (path.endsWith(".yml") || path.endsWith(".yaml")) {
-        fakeData = yaml.safeLoad(dataString);
+        const dataString = await resolveAsString(path, base);
+        fakeData = yaml.load(dataString);
       } else {
         fakeData = await resolve(path, base);
       }
@@ -45,5 +39,5 @@ export async function getFakeDataProvider(info:Info){
   }
   if (!fakeData) fail("no fake data find");
   const dataProvider = withStaticData(fakeData).value();
-  return dataProvider
+  return dataProvider;
 }
