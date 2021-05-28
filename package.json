@@ -20,22 +20,22 @@
     "postdocker:publish": "cross-conf-env docker image push $npm_package_config_imageRepo:latest"
   },
   "dependencies": {
-    "@quick-qui/data-provider": "^1.6.2",
-    "@quick-qui/model-defines": "^2.7.6",
-    "@quick-qui/util": "^1.5.0",
+    "@quick-qui/data-provider": "^1.6.3",
+    "@quick-qui/model-defines": "^2.7.10",
+    "@quick-qui/util": "^1.5.1",
     "@types/cors": "^2.8.9",
     "@types/dotenv": "^8.2.0",
     "@types/js-yaml": "^4.0.1",
-    "@types/lodash": "^4.14.165",
+    "@types/lodash": "^4.14.170",
     "@types/ramda": "^0.27.40",
     "@types/url-parse": "^1.4.3",
     "@types/uuid": "^8.3.0",
-    "@types/ws": "^7.4.2",
+    "@types/ws": "^7.4.4",
     "axios": "^0.21.1",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "debug-logger": "^0.4.1",
-    "dotenv": "^9.0.0",
+    "dotenv": "^10.0.0",
     "express": "^4.17.1",
     "js-yaml": "^4.1.0",
     "lodash": "^4.17.20",
@@ -44,16 +44,16 @@
     "url-parse": "^1.4.7",
     "uuid": "^8.3.2",
     "wait-port": "^0.2.9",
-    "ws": "^7.4.5"
+    "ws": "^7.4.6"
   },
   "devDependencies": {
-    "@types/express": "^4.17.9",
-    "@types/node": "^15.0.2",
+    "@types/express": "^4.17.12",
+    "@types/node": "^15.6.1",
     "cross-conf-env": "^1.2.1",
     "nodemon": "^2.0.6",
     "npm-run-all": "^4.1.5",
-    "ts-node": "^9.1.1",
-    "typescript": "^4.2.4"
+    "ts-node": "^10.0.0",
+    "typescript": "^4.3.2"
   },
   "license": "MIT"
 }

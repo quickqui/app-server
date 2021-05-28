@@ -19,5 +19,8 @@
     "deepscan.ignoreConfirmWarning": true,
     "favorites.resources": [
         "example.http"
-    ]
+    ],
+    "files.watcherExclude": {
+        "**/target": true
+    }
 }
