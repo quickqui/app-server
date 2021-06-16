@@ -8,9 +8,9 @@ import http from "http";
 
 import { dataProvider } from "./data/Data";
 import { env } from "./Env";
-import { withImplementationModel } from "@quick-qui/model-defines";
+import { withImplementationModel } from "@quick-qui/implementation-model";
 import { model } from "./Model";
-import { implementationGlobal } from "@quick-qui/model-defines";
+import { implementationGlobal } from "@quick-qui/implementation-model";
 import { DataProviderParams } from "@quick-qui/data-provider";
 import { log } from "./Util";
 import { newWss } from "./socket";

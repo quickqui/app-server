@@ -1,7 +1,7 @@
 import WebSocket from "ws";
 import { Server } from "http";
 import { log } from "./Util";
-import { implementationGlobal } from "@quick-qui/model-defines";
+import { implementationGlobal } from "@quick-qui/implementation-model";
 export function newWss(server: Server) {
   const wss = new WebSocket.Server({ server, path: "/ws" });
 
