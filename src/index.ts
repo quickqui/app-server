@@ -2,7 +2,6 @@ import dote from "dotenv";
 dote.config();
 
 import express from "express";
-import bodyParser from "body-parser";
 import cors from "cors";
 import http from "http";
 
@@ -15,13 +14,20 @@ import { DataProviderParams } from "@quick-qui/data-provider";
 import { log } from "./Util";
 import { newWss } from "./socket";
 import { bus, events } from "./event";
-import debug from 'debug';
+
 const app = express();
 const port = process.env.PORT || 4000; // default port to listen
 
 app.use(cors());
 
-app.use(bodyParser.json());
+app.use(express.json());
+
+const jsonErrorHandler = async (err, req, res, next) => {
+  log.warn("in json error handle", err);
+  res.status(500).send({ error: err.message });
+};
+
+
 /*
 NOTE 算是一个“内部”接口，不会被业务使用，前端的exchange用这个实现dataProvider的向后传递。
  */
@@ -33,16 +39,19 @@ app.post("/dataProvider", async function (req, res, next) {
     const data = await req.body;
     const type: string = data.type;
     const resource: string = data.resource;
-    const params: DataProviderParams<unknown> = data.params as DataProviderParams<unknown>;
+    const params: DataProviderParams<unknown> =
+      data.params as DataProviderParams<unknown>;
     const result: Promise<any> = (await dataProvider)(type, resource, params);
     res
       .status(200)
       .json(await result)
       .send();
   } catch (e) {
+    log.error(e)
     next(e);
   }
 });
+app.use(jsonErrorHandler);
 
 model.then(async (m) => {
   const impl = withImplementationModel(
@@ -50,7 +59,7 @@ model.then(async (m) => {
   )?.implementationModel?.implementations.find(
     (implementation) => implementation.name === env.implementationName
   );
-  log.info('implementation name - ',env.implementationName);
+  log.info("implementation name - ", env.implementationName);
   log.debug(impl);
 
   if (impl) {
